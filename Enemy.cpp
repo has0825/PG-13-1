@@ -2,8 +2,14 @@
 #include <Novice.h>
 #include <algorithm>
 
+// 静的メンバ変数の初期化
+std::vector<Enemy> Enemy::enemies;
+
 Enemy::Enemy(float startX, float startY, float initialSpeedX)
-    : x(startX), y(startY), speedX(initialSpeedX), isAlive(true) {}
+    : x(startX), y(startY), speedX(initialSpeedX), isAlive(true) {
+    // 新しい敵を敵リストに追加
+    enemies.push_back(*this);
+}
 
 void Enemy::Update() {
     if (isAlive) {
@@ -20,7 +26,7 @@ void Enemy::Draw() {
     }
 }
 
-void Enemy::CheckCollision(std::vector<Enemy>& enemies, float bulletX, float bulletY) {
+void Enemy::CheckCollision(float bulletX, float bulletY) {
     for (auto& enemy : enemies) {
         if (enemy.isAlive &&
             bulletX > enemy.x - 16 && bulletX < enemy.x + 16 &&
@@ -34,7 +40,7 @@ void Enemy::CheckCollision(std::vector<Enemy>& enemies, float bulletX, float bul
     }
 }
 
-void Enemy::ResetAll(std::vector<Enemy>& enemies) {
+void Enemy::ResetAll() {
     for (auto& enemy : enemies) {
         enemy.isAlive = true;
     }

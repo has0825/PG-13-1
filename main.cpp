@@ -1,4 +1,3 @@
-
 #include <Novice.h>
 #include "Enemy.h"
 #include <vector>
@@ -23,10 +22,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     Player player = { 640.0f, 600.0f };
     std::vector<Bullet> bullets;
-    std::vector<Enemy> enemies;
 
-    enemies.emplace_back(100.0f, 300.0f, 7.0f);
-    enemies.emplace_back(300.0f, 500.0f, -7.0f);
+    // 敵を生成
+    Enemy e1(100.0f, 300.0f, 7.0f);
+    Enemy e2(300.0f, 500.0f, -7.0f);
 
     bool allEnemiesDefeated = false;
 
@@ -54,18 +53,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         }
 
         if (!allEnemiesDefeated) {
-            for (auto& enemy : enemies) {
+            for (auto& enemy : Enemy::enemies) {
                 enemy.Update();
             }
 
             for (auto& bullet : bullets) {
                 if (bullet.isActive) {
-                    Enemy::CheckCollision(enemies, bullet.x, bullet.y);
+                    // 衝突チェック
+                    for (auto& enemy : Enemy::enemies) {
+                        enemy.CheckCollision(bullet.x, bullet.y);
+                    }
                 }
             }
 
             allEnemiesDefeated = true;
-            for (auto& enemy : enemies) {
+            for (auto& enemy : Enemy::enemies) {
                 if (enemy.isAlive) {
                     allEnemiesDefeated = false;
                     break;
@@ -74,7 +76,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         }
 
         if (preKeys[DIK_R] == 0 && keys[DIK_R] != 0) {
-            Enemy::ResetAll(enemies);
+            // 敵のリセット
+            for (auto& enemy : Enemy::enemies) {
+                enemy.ResetAll();
+            }
             allEnemiesDefeated = false;
         }
 
@@ -86,12 +91,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             }
         }
 
-        for (auto& enemy : enemies) {
+        for (auto& enemy : Enemy::enemies) {
             enemy.Draw();
         }
 
-        std::string enemyStatusA = "enemyA isAlive = " + std::to_string(enemies[0].isAlive);
-        std::string enemyStatusB = "enemyB isAlive = " + std::to_string(enemies[1].isAlive);
+        std::string enemyStatusA = "enemyA isAlive = " + std::to_string(Enemy::enemies[0].isAlive);
+        std::string enemyStatusB = "enemyB isAlive = " + std::to_string(Enemy::enemies[1].isAlive);
         Novice::ScreenPrintf(10, 10, enemyStatusA.c_str(), 0xFFFFFFFF);
         Novice::ScreenPrintf(10, 30, enemyStatusB.c_str(), 0xFFFFFFFF);
 
